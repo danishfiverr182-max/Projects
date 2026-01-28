@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theme Clock</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Heebo:300&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #000;
+        --secondary-color: #fff;
+      }
+
+      html {
+        transition: all 0.5s ease-in;
+      }
+
+      html.dark {
+        --primary-color: #fff;
+        --secondary-color: #333;
+        background-color: #111;
+        color: var(--primary-color);
+      }
+
+      body {
+        font-family: "Heebo", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .toggle {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        border: 0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+      }
+
+      .clock-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .clock {
+        position: relative;
+        width: 200px;
+        height: 200px;
+      }
+
+      /* 🔢 Clock Numbers */
+      .number {
+        position: absolute;
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--primary-color);
+        transform: translate(-50%, -50%);
+      }
+
+      .needle {
+        background-color: var(--primary-color);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 65px;
+        width: 3px;
+        transform-origin: bottom center;
+        transition: all 0.5s ease-in;
+      }
+
+      .needle.hour {
+        height: 50px;
+      }
+
+      .needle.minute {
+        height: 80px;
+      }
+
+      .needle.second {
+        background-color: #e74c3c;
+        height: 90px;
+      }
+
+      .center-point {
+        background-color: #e74c3c;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+      }
+
+      .time {
+        font-size: 60px;
+        margin-top: 10px;
+      }
+
+      .date {
+        color: #aaa;
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+
+      .date .circle {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        border-radius: 50%;
+        padding: 3px 7px;
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button class="toggle">Dark mode</button>
+
+    <section class="clock-container">
+      <figure class="clock">
+        <!-- Numbers injected by JS -->
+        <span class="needle hour"></span>
+        <span class="needle minute"></span>
+        <span class="needle second"></span>
+        <span class="center-point"></span>
+      </figure>
+
+      <time class="time"></time>
+      <div class="date"></div>
+    </section>
+
+    <script>
+      const clock = document.querySelector(".clock");
+
+      /* 🔢 Create Numbers */
+      for (let i = 1; i <= 12; i++) {
+        const number = document.createElement("div");
+        number.className = "number";
+        number.innerText = i;
+
+        const angle = (i * 30 - 90) * (Math.PI / 180);
+        const radius = 90;
+
+        const x = 100 + radius * Math.cos(angle);
+        const y = 100 + radius * Math.sin(angle);
+
+        number.style.left = `${x}px`;
+        number.style.top = `${y}px`;
+
+        clock.appendChild(number);
+      }
+
+      const hourElement = document.querySelector(".hour");
+      const minuteElement = document.querySelector(".minute");
+      const secondElement = document.querySelector(".second");
+      const timeElement = document.querySelector(".time");
+      const dateElement = document.querySelector(".date");
+      const toggle = document.querySelector(".toggle");
+      const html = document.querySelector("html");
+
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+      toggle.addEventListener("click", () => {
+        html.classList.toggle("dark");
+        toggle.innerText = html.classList.contains("dark")
+          ? "Light mode"
+          : "Dark mode";
+      });
+
+      const scale = (num, in_min, in_max, out_min, out_max) =>
+        ((num - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+
+      function setTime() {
+        const time = new Date();
+        const hours = time.getHours();
+        const minutes = time.getMinutes();
+        const seconds = time.getSeconds();
+        const date = time.getDate();
+        const day = time.getDay();
+        const month = time.getMonth();
+        const hoursForClock = hours % 12 || 12;
+        const ampm = hours >= 12 ? "PM" : "AM";
+
+        hourElement.style.transform = `translate(-50%, -100%) rotate(${scale(
+          hoursForClock,
+          0,
+          12,
+          0,
+          360
+        )}deg)`;
+
+        minuteElement.style.transform = `translate(-50%, -100%) rotate(${scale(
+          minutes,
+          0,
+          59,
+          0,
+          360
+        )}deg)`;
+
+        secondElement.style.transform = `translate(-50%, -100%) rotate(${scale(
+          seconds,
+          0,
+          59,
+          0,
+          360
+        )}deg)`;
+
+        timeElement.innerHTML = `${hoursForClock}:${minutes < 10 ? "0" + minutes : minutes} ${ampm}`;
+        dateElement.innerHTML = `${days[day]}, ${months[month]} <span class="circle">${date}</span>`;
+      }
+
+      setTime();
+      setInterval(setTime, 1000);
+    </script>
+  </body>
+</html>
