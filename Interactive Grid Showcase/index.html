@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Interactive Grid Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            scrollbar-width: none   ;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            height: 600px;
+        }
+
+        .box {
+            background: linear-gradient(135deg, #2d3748, #1a202c);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .btn {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .icon {
+            font-size: 2.5em;
+        }
+
+        /* Simple animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100vh); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes expand {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes rotate360 {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Fullscreen overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                height: auto;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .box {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 Interactive Grid Showcase</h1>
+        <p>Click each button to see cool effects!</p>
+    </div>
+
+    <div class="grid-container">
+        <div class="box" id="box1">
+            <button class="btn" onclick="changeBackground()">
+                <span class="icon">🎨</span>
+                <span>Change<br>Background</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box2">
+            <button class="btn" onclick="confetti()">
+                <span class="icon">🎉</span>
+                <span>Confetti<br>Blast</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box3">
+            <button class="btn" onclick="flashScreen()">
+                <span class="icon">⚡</span>
+                <span>Flash<br>Screen</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box4">
+            <button class="btn" onclick="fallingEmojis()">
+                <span class="icon">😀</span>
+                <span>Emoji<br>Rain</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box5">
+            <button class="btn" onclick="colorWave()">
+                <span class="icon">🌊</span>
+                <span>Color<br>Wave</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box6">
+            <button class="btn" onclick="bubbles()">
+                <span class="icon">🫧</span>
+                <span>Floating<br>Bubbles</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box7">
+            <button class="btn" onclick="nightMode()">
+                <span class="icon">🌙</span>
+                <span>Night<br>Mode</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box8">
+            <button class="btn" onclick="heartRain()">
+                <span class="icon">❤️</span>
+                <span>Heart<br>Rain</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box9">
+            <button class="btn" onclick="randomColors()">
+                <span class="icon">🎲</span>
+                <span>Random<br>Colors</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box10">
+            <button class="btn" onclick="shootingStars()">
+                <span class="icon">⭐</span>
+                <span>Shooting<br>Stars</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box11">
+            <button class="btn" onclick="snowfall()">
+                <span class="icon">❄️</span>
+                <span>Snowfall<br>Effect</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box12">
+            <button class="btn" onclick="disco()">
+                <span class="icon">🕺</span>
+                <span>Disco<br>Mode</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box13">
+            <button class="btn" onclick="fireworks()">
+                <span class="icon">🎆</span>
+                <span>Simple<br>Fireworks</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box14">
+            <button class="btn" onclick="fadeBoxes()">
+                <span class="icon">✨</span>
+                <span>Fade<br>Effect</span>
+            </button>
+        </div>
+        
+        <div class="box" id="box15">
+            <button class="btn" onclick="resetAll()">
+                <span class="icon">🔄</span>
+                <span>Reset<br>All</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Change Background - Simple background color change
+        function changeBackground() {
+            const colors = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+            ];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.background = randomColor;
+        }
+
+        // 2. Confetti Blast - Create colorful confetti falling
+        function confetti() {
+    const count = 500; // more pieces for density
+    for (let i = 0; i < count; i++) {
+        const confettiPiece = document.createElement('div');
+        confettiPiece.style.position = 'fixed';
+        confettiPiece.style.width = '8px';
+        confettiPiece.style.height = '8px';
+        confettiPiece.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confettiPiece.style.left = Math.random() * window.innerWidth + 'px';
+        confettiPiece.style.top = '-10px';
+        confettiPiece.style.zIndex = '999';
+        confettiPiece.style.borderRadius = '50%';
+        document.body.appendChild(confettiPiece);
+
+        let position = -10;
+        let leftPosition = parseFloat(confettiPiece.style.left);
+        const fallSpeed = 4 + Math.random() * 4; // faster
+        const sideMovement = (Math.random() - 0.5) * 4; // more swaying
+
+        const falling = setInterval(() => {
+            position += fallSpeed;
+            leftPosition += sideMovement;
+            confettiPiece.style.top = position + 'px';
+            confettiPiece.style.left = leftPosition + 'px';
+
+            if (position > window.innerHeight) {
+                clearInterval(falling);
+                confettiPiece.remove();
+            }
+        }, 15); // faster updates
+    }
+}
+
+
+        // 3. Flash Screen - White flash effect
+        function flashScreen() {
+            const flash = document.createElement('div');
+            flash.className = 'overlay';
+            flash.style.backgroundColor = 'white';
+            flash.style.opacity = '0';
+            document.body.appendChild(flash);
+            
+            // Fade in quickly
+            setTimeout(() => {
+                flash.style.transition = 'opacity 0.1s';
+                flash.style.opacity = '1';
+            }, 10);
+            
+            // Fade out
+            setTimeout(() => {
+                flash.style.transition = 'opacity 0.3s';
+                flash.style.opacity = '0';
+            }, 150);
+            
+            setTimeout(() => flash.remove(), 500);
+        }
+
+        // 4. Falling Emojis - Random emojis falling from top
+        function fallingEmojis() {
+    const emojis = ['😀', '😎', '🚀', '⭐', '🔥', '💯', '🎉', '✨', '💫', '🌟'];
+    const count = 80; // more emojis for density
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const emoji = document.createElement('div');
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.position = 'fixed';
+            emoji.style.fontSize = 20 + Math.random() * 20 + 'px'; // random size
+            emoji.style.left = Math.random() * window.innerWidth + 'px';
+            emoji.style.top = '-50px';
+            emoji.style.zIndex = '999';
+            emoji.style.pointerEvents = 'none'; // avoids blocking clicks
+
+            document.body.appendChild(emoji);
+
+            let position = -50;
+            let leftPosition = parseFloat(emoji.style.left);
+            const fallSpeed = 4 + Math.random() * 4; // faster fall
+            const sideMovement = (Math.random() - 0.5) * 3; // slight sway
+
+            const falling = setInterval(() => {
+                position += fallSpeed;
+                leftPosition += sideMovement;
+                emoji.style.top = position + 'px';
+                emoji.style.left = leftPosition + 'px';
+
+                if (position > window.innerHeight) {
+                    clearInterval(falling);
+                    emoji.remove();
+                }
+            }, 15); // smoother animation
+        }, i * 50); // faster spawn
+    }
+}
+
+
+        // 5. Color Wave - Boxes change color in sequence
+        function colorWave() {
+            const boxes = document.querySelectorAll('.box');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#00b894'];
+            
+            boxes.forEach((box, index) => {
+                setTimeout(() => {
+                    const originalBg = box.style.background;
+                    box.style.background = colors[index % colors.length];
+                    box.style.transform = 'scale(1.1)';
+                    
+                    setTimeout(() => {
+                        box.style.background = originalBg;
+                        box.style.transform = 'scale(1)';
+                    }, 500);
+                }, index * 100);
+            });
+        }
+
+        // 6. Floating Bubbles - Bubbles float up from bottom
+        function bubbles() {
+    const count = 200; // more bubbles for density
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const bubble = document.createElement('div');
+            const size = 10 + Math.random() * 30; // smaller and varied
+            bubble.style.position = 'fixed';
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.borderRadius = '50%';
+            bubble.style.backgroundColor = `rgba(255, 255, 255, ${0.2 + Math.random() * 0.5})`;
+            bubble.style.border = '1px solid rgba(255, 255, 255, 0.5)';
+            bubble.style.left = Math.random() * window.innerWidth + 'px';
+            bubble.style.bottom = '-50px';
+            bubble.style.zIndex = '999';
+            bubble.style.pointerEvents = 'none'; // avoid blocking clicks
+
+            document.body.appendChild(bubble);
+
+            let position = -50;
+            let sideMovement = (Math.random() - 0.5) * 2; // slight horizontal sway
+            let leftPosition = parseFloat(bubble.style.left);
+            const riseSpeed = 3 + Math.random() * 3; // faster rise
+
+            const rising = setInterval(() => {
+                position += riseSpeed;
+                leftPosition += sideMovement;
+                bubble.style.bottom = position + 'px';
+                bubble.style.left = leftPosition + 'px';
+
+                if (position > window.innerHeight + 50) {
+                    clearInterval(rising);
+                    bubble.remove();
+                }
+            }, 15); // smoother movement
+        }, i * 20); // faster spawn
+    }
+}
+
+
+        // 7. Night Mode - Dark overlay appears
+        function nightMode() {
+            const night = document.createElement('div');
+            night.className = 'overlay';
+            night.style.backgroundColor = 'rgba(0, 0, 20, 0.8)';
+            night.style.opacity = '0';
+            document.body.appendChild(night);
+            
+            setTimeout(() => {
+                night.style.transition = 'opacity 0.5s';
+                night.style.opacity = '1';
+            }, 10);
+            
+            // Add some stars
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'fixed';
+                star.style.width = '3px';
+                star.style.height = '3px';
+                star.style.backgroundColor = 'white';
+                star.style.borderRadius = '50%';
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = Math.random() * window.innerHeight + 'px';
+                star.style.zIndex = '1001';
+                star.style.boxShadow = '0 0 3px white';
+                night.appendChild(star);
+            }
+            
+            setTimeout(() => {
+                night.style.opacity = '0';
+                setTimeout(() => night.remove(), 500);
+            }, 3000);
+        }
+
+        // 8. Heart Rain - Hearts falling from top
+        function heartRain() {
+    const count = 100; // more hearts for density
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.textContent = '❤️';
+            heart.style.position = 'fixed';
+            heart.style.fontSize = (15 + Math.random() * 25) + 'px'; // varied size
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = '-50px';
+            heart.style.zIndex = '999';
+            heart.style.pointerEvents = 'none'; // avoid blocking clicks
+            heart.style.transform = `rotate(${Math.random() * 360}deg)`; // random rotation
+
+            document.body.appendChild(heart);
+
+            let position = -50;
+            let leftPosition = parseFloat(heart.style.left);
+            const fallSpeed = 3 + Math.random() * 3; // faster fall
+            const sideMovement = (Math.random() - 0.5) * 2; // slight sway
+            const falling = setInterval(() => {
+                position += fallSpeed;
+                leftPosition += sideMovement;
+                heart.style.top = position + 'px';
+                heart.style.left = leftPosition + 'px';
+                heart.style.opacity = 1 - position / window.innerHeight;
+
+                if (position > window.innerHeight) {
+                    clearInterval(falling);
+                    heart.remove();
+                }
+            }, 15); // smoother animation
+        }, i * 30); // faster spawn for density
+    }
+}
+
+
+        // 9. Random Colors - Each box gets random color
+        function randomColors() {
+            const boxes = document.querySelectorAll('.box');
+            boxes.forEach(box => {
+                const randomColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                box.style.background = randomColor;
+                box.style.transform = 'rotate(5deg)';
+                
+                setTimeout(() => {
+                    box.style.background = 'linear-gradient(135deg, #2d3748, #1a202c)';
+                    box.style.transform = 'rotate(0deg)';
+                }, 1000);
+            });
+        }
+
+        // 10. Shooting Stars - Stars shoot across screen
+       function shootingStars() {
+    const meteorCount = 40; // denser meteors
+
+    for (let i = 0; i < meteorCount; i++) {
+        setTimeout(() => {
+            const star = document.createElement('div');
+            const size = 8 + Math.random() * 25; // varied meteor size
+            star.style.position = 'fixed';
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.backgroundColor = 'orange';
+            star.style.borderRadius = '50%';
+            star.style.boxShadow = `0 0 15px orange, 0 0 25px yellow`;
+            star.style.right = '-50px';
+            star.style.top = Math.random() * window.innerHeight * 0.7 + 'px';
+            star.style.zIndex = '999';
+            star.style.transform = `rotate(${Math.random() * 360}deg)`;
+            star.style.pointerEvents = 'none';
+
+            document.body.appendChild(star);
+
+            let positionRight = -50;
+            let topPosition = parseFloat(star.style.top);
+            const speed = 12 + Math.random() * 10; // faster for dynamic look
+            const angle = 0.5 + Math.random() * 2; // slight downward angle
+
+            const shooting = setInterval(() => {
+                positionRight += speed;
+                topPosition += angle;
+                star.style.right = positionRight + 'px';
+                star.style.top = topPosition + 'px';
+
+                if (positionRight > window.innerWidth + 50 || topPosition > window.innerHeight + 50) {
+                    clearInterval(shooting);
+                    star.remove();
+                }
+            }, 16); // ~60fps
+        }, i * 100); // faster spawn → denser
+    }
+}
+
+
+
+        // 11. Snowfall - Snowflakes falling
+        function snowfall() {
+    const count = 400; // more snowflakes for density
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const snowflake = document.createElement('div');
+            snowflake.textContent = '❄️';
+            snowflake.style.position = 'fixed';
+            snowflake.style.fontSize = (15 + Math.random() * 20) + 'px'; // varied size
+            snowflake.style.left = Math.random() * window.innerWidth + 'px';
+            snowflake.style.top = '-30px';
+            snowflake.style.zIndex = '999';
+            snowflake.style.opacity = 0.6 + Math.random() * 0.4;
+            snowflake.style.pointerEvents = 'none';
+
+            document.body.appendChild(snowflake);
+
+            let position = -30;
+            let sidePosition = parseFloat(snowflake.style.left);
+            let direction = Math.random() > 0.5 ? 1 : -1;
+            const fallSpeed = 2 + Math.random() * 2; // faster fall
+            const sway = 0.5 + Math.random() * 1.5; // horizontal sway
+
+            const falling = setInterval(() => {
+                position += fallSpeed;
+                sidePosition += direction * sway;
+                snowflake.style.top = position + 'px';
+                snowflake.style.left = sidePosition + 'px';
+
+                // Slight sway direction change
+                if (Math.random() > 0.95) direction *= -1;
+
+                if (position > window.innerHeight) {
+                    clearInterval(falling);
+                    snowflake.remove();
+                }
+            }, 16); // ~60fps smooth
+        }, i * 20); // faster spawn for dense effect
+    }
+}
+
+        // 12. Disco Mode - Random flashing colors
+        function disco() {
+    let count = 0;
+    const disco = setInterval(() => {
+        // Flash body background
+        document.body.style.background = `hsl(${Math.random() * 360}, 80%, 50%)`;
+        document.body.style.transition = 'background 0.1s';
+
+        // Flash all containers
+        const containers = document.querySelectorAll('.box');
+        containers.forEach(container => {
+            container.style.background = `hsl(${Math.random() * 360}, 80%, 50%)`;
+            container.style.transition = 'background 0.1s';
+        });
+
+        count++;
+        if (count > 60) { // longer disco
+            clearInterval(disco);
+            // Reset body
+            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            // Reset containers
+            containers.forEach(container => {
+                container.style.background = ''; // or original color
+            });
+        }
+    }, 100); // fast flashes
+}
+
+        // 13. Simple Fireworks - Circles expanding
+        function fireworks() {
+    const fireworksCount = 15; // more fireworks for density
+
+    for (let i = 0; i < fireworksCount; i++) {
+        setTimeout(() => {
+            const centerX = 50 + Math.random() * (window.innerWidth - 100);
+            const centerY = 50 + Math.random() * (window.innerHeight - 100);
+            const particlesCount = 50 + Math.floor(Math.random() * 50); // more particles per firework
+
+            for (let j = 0; j < particlesCount; j++) {
+                const particle = document.createElement('div');
+                const size = 3 + Math.random() * 3;
+                particle.style.position = 'fixed';
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                particle.style.borderRadius = '50%';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.zIndex = '999';
+                particle.style.pointerEvents = 'none';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * 2 * Math.PI; // random direction
+                const speed = 4 + Math.random() * 6; // faster particles
+                let x = centerX;
+                let y = centerY;
+                let opacity = 1;
+
+                const move = setInterval(() => {
+                    x += Math.cos(angle) * speed;
+                    y += Math.sin(angle) * speed;
+                    opacity -= 0.025; // fade faster
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.opacity = opacity;
+
+                    if (opacity <= 0) {
+                        clearInterval(move);
+                        particle.remove();
+                    }
+                }, 16); // smooth ~60fps
+            }
+        }, i * 150); // closer fireworks for density
+    }
+}
+
+        // 14. Fade Effect - Boxes fade in and out
+        function fadeBoxes() {
+            const boxes = document.querySelectorAll('.box');
+            boxes.forEach((box, index) => {
+                setTimeout(() => {
+                    box.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        box.style.transition = 'opacity 0.5s';
+                        box.style.opacity = '1';
+                    }, 500);
+                }, index * 100);
+            });
+        }
+
+        // 15. Reset All - Clear everything
+        function resetAll() {
+            // Remove all created elements
+            const elements = document.querySelectorAll('.overlay, div[style*="position: fixed"]');
+            elements.forEach(el => {
+                if (!el.classList.contains('box') && !el.classList.contains('btn')) {
+                    el.remove();
+                }
+            });
+            
+            // Reset body background
+            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            
+            // Reset all boxes
+            const boxes = document.querySelectorAll('.box');
+            boxes.forEach(box => {
+                box.style.background = 'linear-gradient(135deg, #2d3748, #1a202c)';
+                box.style.transform = 'scale(1) rotate(0deg)';
+                box.style.opacity = '1';
+                box.style.transition = 'all 0.3s ease';
+            });
+        }
+    </script>
+</body>
+</html>

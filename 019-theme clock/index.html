@@ -7,223 +7,1007 @@
     <style>
       @import url("https://fonts.googleapis.com/css?family=Heebo:300&display=swap");
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
 
       :root {
-        --primary-color: #000;
-        --secondary-color: #fff;
+        --primary: #000;
+        --secondary: #fff;
+        --bg: #fff;
+        --accent: #e74c3c;
       }
-
-      html {
-        transition: all 0.5s ease-in;
-      }
-
       html.dark {
-        --primary-color: #fff;
-        --secondary-color: #333;
-        background-color: #111;
-        color: var(--primary-color);
+        --primary: #fff;
+        --secondary: #333;
+        --bg: #111;
       }
 
       body {
         font-family: "Heebo", sans-serif;
+        background: var(--bg);
+        color: var(--primary);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         height: 100vh;
-        margin: 0;
+        overflow: hidden;
+        transition: background 0.5s, color 0.5s, filter 0.6s;
       }
 
+      /* ── Toggle ── */
       .toggle {
-        background-color: var(--primary-color);
-        color: var(--secondary-color);
-        border: 0;
+        background: var(--primary);
+        color: var(--secondary);
+        border: none;
         border-radius: 4px;
-        padding: 8px 12px;
+        padding: 8px 14px;
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 14px; right: 14px;
         cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        transition: opacity 0.2s;
+        z-index: 10;
       }
+      .toggle:hover { opacity: 0.7; }
 
+      /* ── Layout ── */
+      .clock-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 48px;
+        transition: gap 0.5s;
+      }
       .clock-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 6px;
       }
 
+      /* ── Clock face ── */
       .clock {
         position: relative;
         width: 200px;
         height: 200px;
+        border-radius: 50%;
+        transition: box-shadow 0.5s, filter 0.5s, transform 0.3s;
       }
-
-      /* 🔢 Clock Numbers */
       .number {
         position: absolute;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: bold;
-        color: var(--primary-color);
+        color: var(--primary);
         transform: translate(-50%, -50%);
+        transition: color 0.4s, text-shadow 0.4s, opacity 0.4s;
+        user-select: none;
+        pointer-events: none;
       }
 
+      /* ── Needles ── */
       .needle {
-        background-color: var(--primary-color);
+        background: var(--primary);
         position: absolute;
-        top: 50%;
-        left: 50%;
-        height: 65px;
+        top: 50%; left: 50%;
         width: 3px;
         transform-origin: bottom center;
-        transition: all 0.5s ease-in;
+        border-radius: 2px;
+        transition: box-shadow 0.3s, background 0.3s;
       }
-
-      .needle.hour {
-        height: 50px;
-      }
-
-      .needle.minute {
-        height: 80px;
-      }
-
-      .needle.second {
-        background-color: #e74c3c;
-        height: 90px;
-      }
+      .needle.hour   { height: 50px; width: 4px; }
+      .needle.minute { height: 75px; }
+      .needle.second { height: 88px; width: 2px; background: var(--accent); }
 
       .center-point {
-        background-color: #e74c3c;
-        width: 10px;
-        height: 10px;
+        background: var(--accent);
+        width: 10px; height: 10px;
         position: absolute;
-        top: 50%;
-        left: 50%;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
+        z-index: 2;
+        transition: box-shadow 0.3s, transform 0.3s;
       }
 
+      /* ── Digital ── */
       .time {
-        font-size: 60px;
-        margin-top: 10px;
+        font-size: 58px;
+        letter-spacing: -1px;
+        color: var(--primary);
+        line-height: 1;
+        transition: color 0.4s, text-shadow 0.4s, opacity 0.4s;
       }
-
       .date {
-        color: #aaa;
-        font-size: 14px;
+        color: #888;
+        font-size: 13px;
         text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: opacity 0.4s;
+      }
+      .date .circle {
+        background: var(--primary);
+        color: var(--secondary);
+        border-radius: 50%;
+        padding: 2px 7px;
+        margin-left: 4px;
+        display: inline-block;
       }
 
-      .date .circle {
-        background-color: var(--primary-color);
-        color: var(--secondary-color);
-        border-radius: 50%;
-        padding: 3px 7px;
-        margin-left: 5px;
+      /* ── Input ── */
+      .input-area {
+        margin-top: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 380px;
+        transition: opacity 0.4s;
       }
+      .input-area input {
+        width: 100%;
+        padding: 11px 15px;
+        border: 1px solid rgba(128,128,128,0.22);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--primary);
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s, background 0.4s, color 0.4s;
+        caret-color: var(--accent);
+      }
+      .input-area input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(231,74,60,0.13);
+      }
+      .input-area input::placeholder {
+        color: rgba(128,128,128,0.42);
+        font-size: 11px;
+      }
+
+      /* ── Status bar ── */
+      .status-bar {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: rgba(128,128,128,0.55);
+      }
+      .speed-val { color: var(--primary); font-weight: bold; }
+      .mode-label {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 9px;
+        letter-spacing: 2px;
+        font-weight: bold;
+        background: rgba(231,74,60,0.1);
+        color: var(--accent);
+        transition: background 0.3s;
+      }
+
+      /* ══════════════════════════════════════════════════════════
+         VISUAL MODE CLASSES
+         ══════════════════════════════════════════════════════════ */
+
+      /* glow */
+      body.glow-on .clock { box-shadow: 0 0 30px 6px rgba(231,74,60,0.35), 0 0 65px 14px rgba(231,74,60,0.1); }
+      body.glow-on .number { color: var(--accent) !important; text-shadow: 0 0 8px rgba(231,74,60,0.5); }
+      body.glow-on .time { text-shadow: 0 0 20px rgba(231,74,60,0.4); color: var(--accent) !important; }
+      body.glow-on .center-point { box-shadow: 0 0 12px 5px rgba(231,74,60,0.5); transform: translate(-50%,-50%) scale(1.3); }
+
+      /* dim */
+      body.dim-on .clock, body.dim-on .time, body.dim-on .date { filter: brightness(0.38); }
+
+      /* mono */
+      body.mono-on .clock, body.mono-on .time, body.mono-on .date { filter: grayscale(1); }
+
+      /* neon */
+      body.neon-on { --accent: #0ff; }
+      body.neon-on .clock { box-shadow: 0 0 24px 4px rgba(0,255,255,0.3), 0 0 55px 10px rgba(180,0,255,0.15); }
+      body.neon-on .needle { background: #0ff !important; box-shadow: 0 0 6px 2px rgba(0,255,255,0.6); }
+      body.neon-on .needle.second { background: #f0f !important; box-shadow: 0 0 8px 3px rgba(255,0,255,0.7); }
+      body.neon-on .number { color: #0ff !important; text-shadow: 0 0 6px rgba(0,255,255,0.7); }
+      body.neon-on .center-point { background: #f0f; box-shadow: 0 0 10px 4px rgba(255,0,255,0.6); }
+      body.neon-on .time { color: #0ff !important; text-shadow: 0 0 16px rgba(0,255,255,0.5); }
+
+      /* glass */
+      body.glass-on .clock {
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(12px) saturate(1.4);
+        -webkit-backdrop-filter: blur(12px) saturate(1.4);
+        border: 1px solid rgba(255,255,255,0.25);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      }
+      html.dark body.glass-on .clock {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.1);
+      }
+
+      /* shadow */
+      body.shadow-on .needle { opacity: 0.22 !important; box-shadow: 5px 5px 16px 3px rgba(0,0,0,0.75) !important; }
+      body.shadow-on .needle.second { opacity: 0.28 !important; box-shadow: 4px 4px 14px 2px rgba(100,0,0,0.75) !important; }
+      body.shadow-on .center-point { box-shadow: 0 0 20px 8px rgba(0,0,0,0.65); }
+
+      /* focus */
+      body.focus-on .number,
+      body.focus-on .time,
+      body.focus-on .date,
+      body.focus-on .toggle { opacity: 0; pointer-events: none; }
+      body.focus-on .input-area { opacity: 0.2; }
+
+      /* echo trails */
+      .echo-needle {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform-origin: bottom center;
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      /* ── Explain overlay ── */
+      #explain-overlay {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(18,18,18,0.9);
+        color: #fff;
+        border-radius: 10px;
+        padding: 26px 32px;
+        max-width: 300px;
+        text-align: center;
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s;
+        backdrop-filter: blur(8px);
+      }
+      #explain-overlay.show { opacity: 1; }
+      #explain-overlay h3 { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+      #explain-overlay p  { font-size: 12px; line-height: 1.7; color: rgba(255,255,255,0.65); }
+
+      /* ── Mirror label ── */
+      .mirror-label {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(128,128,128,0.35);
+        margin-top: 4px;
+        text-align: center;
+      }
+      .help-btn {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  background: transparent;
+  border: 1px solid rgba(128,128,128,0.25);
+  color: var(--primary);
+  padding: 6px 14px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 20px;
+  opacity: 0.6;
+  transition: opacity 0.3s, border-color 0.3s;
+  z-index: 10;
+}
+.help-btn:hover {
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+.help-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 64px;
+  width: 340px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: rgba(18,18,18,0.92);
+  color: #fff;
+  border-radius: 12px;
+  border: 2px solid green;
+  padding: 22px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.35s, transform 0.35s;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+}
+
+.help-panel.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.help-inner h3 {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 18px 0 6px;
+}
+
+.help-inner p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
+}
+strong{
+  color: #0ff;
+}
+
     </style>
   </head>
-
   <body>
+    <button class="help-btn" id="helpBtn">Commands</button>
+
+<div class="help-panel" id="helpPanel">
+  <div class="help-inner">
+    <h3>⏱️ Time Behavior</h3>
+    <p>
+      <strong>FREEZE</strong>: Hands lock in place instantly<br>
+      <strong>PULSE</strong>: Second hand jumps once per second<br>
+      <strong>DRIFT</strong>: Random per-frame wobble<br>
+      <strong>SKIP</strong>: Random 1–5s jumps<br>
+      <strong>REVERSE</strong>: All hands run backward at 3×<br>
+      <strong>ECHO</strong>: Ghost trails appear behind every hand
+    </p>
+
+    <h3>🎨 Visual</h3>
+<p>
+  <strong>MONO</strong>: Full grayscale<br>
+  <strong>NEON</strong>: Cyan/magenta glow<br>
+  <strong>GLASS</strong>: Frosted glass face<br>
+  <strong>SHADOW</strong>: Shadows dominate<br>
+  <strong>DIM</strong>: Darkened appearance<br>
+  <strong>GLOW</strong>: Warm red glow<br>
+  <strong>FOCUS</strong>: UI disappears<br>
+  <strong>BREATH</strong>: Breathing pulse<br>
+  <strong>SILENT</strong>: Smooth continuous motion
+</p>
+
+<h3>🧠 Logic</h3>
+<p>
+  <strong>CHAOS</strong>: Random mode rerolls<br>
+  <strong>GRAVITY</strong>: Pendulum physics<br>
+  <strong>MIRROR</strong>: Second clock runs backward
+</p>
+
+<h3>🧪 Meta</h3>
+<p>
+  <strong>EXPLAIN</strong>: Shows mode description<br>
+  <strong>OBSERVE</strong>: Typing, idle & hover reactions<br>
+  <strong>REALITY</strong>: Returns to real time smoothly<br>
+  <strong>RESET</strong>: Clears all modes
+</p>
+  </div>
+</div>
+
     <button class="toggle">Dark mode</button>
 
-    <section class="clock-container">
-      <figure class="clock">
-        <!-- Numbers injected by JS -->
-        <span class="needle hour"></span>
-        <span class="needle minute"></span>
-        <span class="needle second"></span>
-        <span class="center-point"></span>
-      </figure>
+    <div class="clock-wrapper" id="clockWrapper">
+      <div class="clock-container" id="mainContainer">
+        <figure class="clock" id="mainClock">
+          <span class="needle hour"   id="hourEl"></span>
+          <span class="needle minute" id="minuteEl"></span>
+          <span class="needle second" id="secondEl"></span>
+          <span class="center-point"></span>
+        </figure>
+        <time class="time" id="timeEl"></time>
+        <div  class="date" id="dateEl"></div>
+      </div>
+    </div>
 
-      <time class="time"></time>
-      <div class="date"></div>
-    </section>
+    <div class="input-area">
+      <input type="text" id="typingInput"
+             placeholder="freeze · pulse · drift · echo · skip · reverse · mono · neon · glass · shadow · dim · glow · focus · chaos · gravity · mirror · silent · breath · explain · observe · reality · reset">
+      <div class="status-bar">
+        <span>Speed: <span class="speed-val" id="speedVal">0</span> <span style="font-weight:normal;opacity:.55">chars/sec</span></span>
+        <span class="mode-label" id="modeLabel">NORMAL</span>
+      </div>
+    </div>
+
+    <div id="explain-overlay">
+      <h3 id="explainTitle">—</h3>
+      <p  id="explainDesc">—</p>
+    </div>
 
     <script>
-      const clock = document.querySelector(".clock");
+      const helpBtn = document.getElementById('helpBtn');
+const helpPanel = document.getElementById('helpPanel');
 
-      /* 🔢 Create Numbers */
+helpBtn.addEventListener('click', () => {
+  helpPanel.classList.toggle('show');
+});
+
+    // ============================================================
+    //  REFS
+    // ============================================================
+    const mainClock    = document.getElementById("mainClock");
+    const hourEl       = document.getElementById("hourEl");
+    const minuteEl     = document.getElementById("minuteEl");
+    const secondEl     = document.getElementById("secondEl");
+    const timeEl       = document.getElementById("timeEl");
+    const dateEl       = document.getElementById("dateEl");
+    const toggleBtn    = document.querySelector(".toggle");
+    const htmlEl       = document.documentElement;
+    const typingInput  = document.getElementById("typingInput");
+    const speedValEl   = document.getElementById("speedVal");
+    const modeLabelEl  = document.getElementById("modeLabel");
+    const clockWrapper = document.getElementById("clockWrapper");
+    const explainOvl   = document.getElementById("explain-overlay");
+    const explainTitle = document.getElementById("explainTitle");
+    const explainDesc  = document.getElementById("explainDesc");
+
+    const days   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    // ── Numbers ──
+    function addNumbers(el, radius, fontSize) {
+      const size = radius * 2 + 20;
       for (let i = 1; i <= 12; i++) {
-        const number = document.createElement("div");
-        number.className = "number";
-        number.innerText = i;
-
-        const angle = (i * 30 - 90) * (Math.PI / 180);
-        const radius = 90;
-
-        const x = 100 + radius * Math.cos(angle);
-        const y = 100 + radius * Math.sin(angle);
-
-        number.style.left = `${x}px`;
-        number.style.top = `${y}px`;
-
-        clock.appendChild(number);
+        const n = document.createElement("div");
+        n.className = "number";
+        n.innerText = i;
+        n.style.fontSize = fontSize + "px";
+        const a = (i * 30 - 90) * (Math.PI / 180);
+        n.style.left = ((size/2) + radius * Math.cos(a)) + "px";
+        n.style.top  = ((size/2) + radius * Math.sin(a)) + "px";
+        el.appendChild(n);
       }
+    }
+    addNumbers(mainClock, 90, 15);
 
-      const hourElement = document.querySelector(".hour");
-      const minuteElement = document.querySelector(".minute");
-      const secondElement = document.querySelector(".second");
-      const timeElement = document.querySelector(".time");
-      const dateElement = document.querySelector(".date");
-      const toggle = document.querySelector(".toggle");
-      const html = document.querySelector("html");
+    // ── Dark mode ──
+    toggleBtn.addEventListener("click", () => {
+      htmlEl.classList.toggle("dark");
+      toggleBtn.innerText = htmlEl.classList.contains("dark") ? "Light mode" : "Dark mode";
+    });
 
-      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-      toggle.addEventListener("click", () => {
-        html.classList.toggle("dark");
-        toggle.innerText = html.classList.contains("dark")
-          ? "Light mode"
-          : "Dark mode";
+    // ============================================================
+    //  VIRTUAL CLOCK STATE
+    // ============================================================
+    let hAngle, mAngle, sAngle;
+
+    function realAngles() {
+      const n = new Date();
+      const h = n.getHours() % 12, m = n.getMinutes(), s = n.getSeconds();
+      return { s:(s/60)*360, m:(m/60)*360+(s/60)*6, h:(h/12)*360+(m/60)*30 };
+    }
+    (function(){ const r = realAngles(); sAngle=r.s; mAngle=r.m; hAngle=r.h; })();
+
+    const DEG_S = 6, DEG_M = 0.1, DEG_H = 360/43200;
+
+    let speedMult  = 1;
+    let targetMult = 1;
+    let currentMode = "normal";
+
+    // Visual toggle flags
+    const vFlags = { glow:false, dim:false, mono:false, neon:false, glass:false, shadow:false, focus:false, breath:false, silent:false, echo:false };
+
+
+    // ============================================================
+    //  TYPING SPEED
+    // ============================================================
+    const keyTimes = [];
+    let smoothSpeed = 0;
+
+    typingInput.addEventListener("keydown", function(e) {
+      if (e.key.length !== 1 && e.key !== "Backspace") return;
+      keyTimes.push(performance.now());
+      if (currentMode === "observe") observeResetIdle();
+    });
+
+    function calcTypingSpeed() {
+      const now = performance.now();
+      while (keyTimes.length && keyTimes[0] < now - 1000) keyTimes.shift();
+      const raw = keyTimes.length;
+      smoothSpeed += (raw - smoothSpeed) * 0.18;
+      speedValEl.textContent = Math.round(smoothSpeed);
+
+      if (currentMode === "normal" || currentMode === "observe") {
+        targetMult = raw === 0 ? (currentMode === "observe" ? 0.3 : 1) : 1 + (raw/15)*11;
+      }
+    }
+
+
+    // ============================================================
+    //  COMMAND DESCRIPTIONS (for 'explain')
+    // ============================================================
+    const DESC = {
+      normal:  "Real-time clock. Typing speed controls hand speed.",
+      freeze:  "All hands frozen. Type reset to unfreeze.",
+      pulse:   "Second hand ticks in 1-second rhythmic pulses.",
+      drift:   "Hands wobble with organic randomness.",
+      echo:    "Hands leave fading motion trails behind them.",
+      skip:    "Time jumps forward randomly by a few seconds.",
+      reverse: "All hands run smoothly backward at 3× speed.",
+      mono:    "Grayscale. Ultra-minimal, stripped of color.",
+      neon:    "Futuristic neon glow: cyan and magenta.",
+      glass:   "The clock face becomes frosted glass.",
+      shadow:  "Shadows overpower the hands. They become ghosts.",
+      dim:     "Brightness fades gradually.",
+      glow:    "Hands and markers pulse with warm red glow.",
+      focus:   "Distraction-free. Only the hands remain.",
+      chaos:   "Everything changes randomly: speed, glow, visuals.",
+      gravity: "Hands swing like weighted pendulums.",
+      mirror:  "A second clock appears, running backward.",
+      silent:  "Perfectly smooth continuous motion.",
+      breath:  "The clock face breathes: scales in and out.",
+      observe: "The clock watches you. Type fast → speed up. Go idle → dim. Hover near clock → glow.",
+      reality: "Smoothly returning to real current time…"
+    };
+
+
+    // ============================================================
+    //  PER-MODE STATE
+    // ============================================================
+
+    // pulse
+    let pulseAccum = 0;
+
+    // skip
+    let skipTimer = 0, skipNext = 1.2;
+
+    // gravity: damped pendulum
+    let grav = { t0:0, hTgt:0, mTgt:0, sTgt:0, hA:0, mA:0, sA:0 };
+
+    // echo: trail buffer + ghost DOM elements
+    const ECHO_LEN = 12;
+    let echoBuffer = [];
+    let echoEls = { h:[], m:[], s:[] };
+
+    function echoInit() {
+      const specs = { h:{w:4,h:50,col:"0,0,0"}, m:{w:3,h:75,col:"0,0,0"}, s:{w:2,h:88,col:"231,74,60"} };
+      ["h","m","s"].forEach(k => {
+        echoEls[k] = [];
+        for (let i = 0; i < ECHO_LEN; i++) {
+          const el = document.createElement("span");
+          el.className = "echo-needle";
+          el.style.width  = specs[k].w + "px";
+          el.style.height = specs[k].h + "px";
+          el.style.background = "rgba(" + specs[k].col + ",0)";
+          el.style.opacity = 0;
+          mainClock.appendChild(el);
+          echoEls[k].push(el);
+        }
       });
+      echoBuffer = [];
+    }
+    function echoClear() {
+      ["h","m","s"].forEach(k => { echoEls[k].forEach(el => el.remove()); echoEls[k] = []; });
+      echoBuffer = [];
+    }
 
-      const scale = (num, in_min, in_max, out_min, out_max) =>
-        ((num - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+    // chaos
+    let chaosInterval = null;
+    function chaosStart() {
+      function reroll() {
+        targetMult = (Math.random()*30) - 5;
+        if (Math.random() < 0.35) toggleVisual("glow");
+        if (Math.random() < 0.25) toggleVisual("neon");
+        if (Math.random() < 0.2)  toggleVisual("mono");
+      }
+      reroll();
+      chaosInterval = setInterval(reroll, 350 + Math.random()*1100);
+    }
+    function chaosStop() { clearInterval(chaosInterval); chaosInterval = null; }
 
-      function setTime() {
-        const time = new Date();
-        const hours = time.getHours();
-        const minutes = time.getMinutes();
-        const seconds = time.getSeconds();
-        const date = time.getDate();
-        const day = time.getDay();
-        const month = time.getMonth();
-        const hoursForClock = hours % 12 || 12;
-        const ampm = hours >= 12 ? "PM" : "AM";
+    // mirror
+    let mirrorContainer=null, mirrorClock=null, mirrorH=null, mirrorM=null, mirrorS=null;
+    let mH=0, mM=0, mS=0;
 
-        hourElement.style.transform = `translate(-50%, -100%) rotate(${scale(
-          hoursForClock,
-          0,
-          12,
-          0,
-          360
-        )}deg)`;
+    function mirrorCreate() {
+      mirrorContainer = document.createElement("div");
+      mirrorContainer.className = "clock-container";
 
-        minuteElement.style.transform = `translate(-50%, -100%) rotate(${scale(
-          minutes,
-          0,
-          59,
-          0,
-          360
-        )}deg)`;
+      mirrorClock = document.createElement("figure");
+      mirrorClock.className = "clock";
+      mirrorClock.style.width  = "160px";
+      mirrorClock.style.height = "160px";
 
-        secondElement.style.transform = `translate(-50%, -100%) rotate(${scale(
-          seconds,
-          0,
-          59,
-          0,
-          360
-        )}deg)`;
+      addNumbers(mirrorClock, 72, 12);
 
-        timeElement.innerHTML = `${hoursForClock}:${minutes < 10 ? "0" + minutes : minutes} ${ampm}`;
-        dateElement.innerHTML = `${days[day]}, ${months[month]} <span class="circle">${date}</span>`;
+      mirrorH = document.createElement("span"); mirrorH.className="needle hour";   mirrorH.style.height="40px";
+      mirrorM = document.createElement("span"); mirrorM.className="needle minute"; mirrorM.style.height="60px";
+      mirrorS = document.createElement("span"); mirrorS.className="needle second"; mirrorS.style.height="70px";
+      const cp = document.createElement("span"); cp.className="center-point"; cp.style.width=cp.style.height="8px";
+
+      mirrorClock.appendChild(mirrorH);
+      mirrorClock.appendChild(mirrorM);
+      mirrorClock.appendChild(mirrorS);
+      mirrorClock.appendChild(cp);
+
+      const lbl = document.createElement("div"); lbl.className="mirror-label"; lbl.innerText="mirror";
+      mirrorContainer.appendChild(mirrorClock);
+      mirrorContainer.appendChild(lbl);
+      clockWrapper.appendChild(mirrorContainer);
+
+      const r = realAngles(); mH=r.h; mM=r.m; mS=r.s;
+    }
+    function mirrorDestroy() {
+      if (mirrorContainer) mirrorContainer.remove();
+      mirrorContainer=mirrorClock=mirrorH=mirrorM=mirrorS=null;
+    }
+
+    // observe
+    let obsIdleTimer = null, obsMouseFn = null;
+    function observeStart() {
+      observeResetIdle();
+      obsMouseFn = function(e) {
+        const rect = mainClock.getBoundingClientRect();
+        const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+        const dist = Math.sqrt((e.clientX-cx)**2 + (e.clientY-cy)**2);
+        const prox = Math.max(0, 1 - dist/220);
+        const g = Math.round(prox*32), o = (prox*0.5).toFixed(2);
+        mainClock.style.boxShadow = prox > 0.04
+          ? "0 0 "+g+"px rgba(231,74,60,"+o+"), 0 0 "+(g*2)+"px rgba(231,74,60,"+(prox*0.15).toFixed(2)+")"
+          : "";
+      };
+      document.addEventListener("mousemove", obsMouseFn);
+    }
+    function observeResetIdle() {
+      clearTimeout(obsIdleTimer);
+      if (vFlags.dim) toggleVisual("dim"); // clear idle-dim
+      obsIdleTimer = setTimeout(() => {
+        if (!vFlags.dim) toggleVisual("dim");
+        targetMult = 0.3;
+      }, 4000);
+    }
+    function observeStop() {
+      clearTimeout(obsIdleTimer); obsIdleTimer=null;
+      if (obsMouseFn) { document.removeEventListener("mousemove", obsMouseFn); obsMouseFn=null; }
+      mainClock.style.boxShadow = "";
+      if (vFlags.dim) toggleVisual("dim");
+    }
+
+    // explain
+    let explainTimeout = null;
+    function explainShow() {
+      explainTitle.textContent = currentMode.toUpperCase();
+      explainDesc.textContent  = DESC[currentMode] || "No description.";
+      explainOvl.classList.add("show");
+      clearTimeout(explainTimeout);
+      explainTimeout = setTimeout(() => explainOvl.classList.remove("show"), 4200);
+    }
+
+    // reality
+    let realTgt=null, realStart=null, realElapsed=0;
+    const REAL_DUR = 2200;
+
+
+    // ============================================================
+    //  VISUAL TOGGLE + CLEANUP
+    // ============================================================
+    function toggleVisual(name) {
+      vFlags[name] = !vFlags[name];
+      document.body.classList.toggle(name+"-on", vFlags[name]);
+    }
+    function clearAllVisuals() {
+      Object.keys(vFlags).forEach(k => { if(vFlags[k]){ vFlags[k]=false; document.body.classList.remove(k+"-on"); }});
+      mainClock.style.boxShadow = "";
+      mainClock.style.transform = "";
+    }
+
+    function cleanupMode() {
+      chaosStop();
+      mirrorDestroy();
+      if (vFlags.echo) { echoClear(); vFlags.echo=false; document.body.classList.remove("echo-on"); }
+      if (currentMode === "observe") observeStop();
+      grav = { t0:0, hTgt:0, mTgt:0, sTgt:0, hA:0, mA:0, sA:0 };
+      realTgt=null; realStart=null; realElapsed=0;
+      clearTimeout(explainTimeout); explainOvl.classList.remove("show");
+      pulseAccum=0; skipTimer=0; skipNext=1.2;
+    }
+
+
+    // ============================================================
+    //  TRIGGER TABLE
+    // ============================================================
+    const TRIGGERS = {
+      // time
+      freeze:  {mode:"freeze",  label:"FREEZE",  mult:0,    bg:"rgba(60,60,180,0.18)"},
+      stop:    {mode:"freeze",  label:"FREEZE",  mult:0,    bg:"rgba(60,60,180,0.18)"},
+      pause:   {mode:"freeze",  label:"FREEZE",  mult:0,    bg:"rgba(60,60,180,0.18)"},
+      wait:    {mode:"freeze",  label:"FREEZE",  mult:0,    bg:"rgba(60,60,180,0.18)"},
+      pulse:   {mode:"pulse",   label:"PULSE",   mult:1,    bg:"rgba(180,120,60,0.2)"},
+      drift:   {mode:"drift",   label:"DRIFT",   mult:1,    bg:"rgba(100,140,180,0.2)"},
+      echo:    {mode:"echo",    label:"ECHO",    mult:null, bg:"rgba(140,100,180,0.2)"},
+      skip:    {mode:"skip",    label:"SKIP",    mult:1,    bg:"rgba(180,160,60,0.2)"},
+      reverse: {mode:"reverse", label:"REVERSE", mult:-3,   bg:"rgba(160,60,180,0.18)"},
+      back:    {mode:"reverse", label:"REVERSE", mult:-3,   bg:"rgba(160,60,180,0.18)"},
+      rewind:  {mode:"reverse", label:"REVERSE", mult:-3,   bg:"rgba(160,60,180,0.18)"},
+      // visual
+      mono:    {mode:"mono",    label:"MONO",    mult:null, bg:"rgba(128,128,128,0.2)"},
+      neon:    {mode:"neon",    label:"NEON",    mult:null, bg:"rgba(0,255,255,0.15)"},
+      glass:   {mode:"glass",   label:"GLASS",   mult:null, bg:"rgba(100,180,220,0.18)"},
+      shadow:  {mode:"shadow",  label:"SHADOW",  mult:null, bg:"rgba(20,20,20,0.25)"},
+      dim:     {mode:"dim",     label:"DIM",     mult:null, bg:"rgba(0,0,0,0.18)"},
+      glow:    {mode:"glow",    label:"GLOW",    mult:null, bg:"rgba(231,74,60,0.22)"},
+      light:   {mode:"glow",    label:"GLOW",    mult:null, bg:"rgba(231,74,60,0.22)"},
+      shine:   {mode:"glow",    label:"GLOW",    mult:null, bg:"rgba(231,74,60,0.22)"},
+      focus:   {mode:"focus",   label:"FOCUS",   mult:null, bg:"rgba(60,60,180,0.18)"},
+      silent:  {mode:"silent",  label:"SILENT",  mult:null, bg:"rgba(60,100,140,0.18)"},
+      breath:  {mode:"breath",  label:"BREATH",  mult:null, bg:"rgba(100,160,120,0.18)"},
+      // logic
+      chaos:   {mode:"chaos",   label:"CHAOS",   mult:null, bg:"rgba(231,74,60,0.3)"},
+      crazy:   {mode:"chaos",   label:"CHAOS",   mult:null, bg:"rgba(231,74,60,0.3)"},
+      wild:    {mode:"chaos",   label:"CHAOS",   mult:null, bg:"rgba(231,74,60,0.3)"},
+      spin:    {mode:"chaos",   label:"CHAOS",   mult:null, bg:"rgba(231,74,60,0.3)"},
+      gravity: {mode:"gravity", label:"GRAVITY", mult:1,    bg:"rgba(80,60,160,0.22)"},
+      mirror:  {mode:"mirror",  label:"MIRROR",  mult:1,    bg:"rgba(60,140,180,0.2)"},
+      // meta
+      explain: {mode:"explain", label:"EXPLAIN", mult:null, bg:"rgba(231,74,60,0.1)"},
+      observe: {mode:"observe", label:"OBSERVE", mult:1,    bg:"rgba(80,140,220,0.2)"},
+      reality: {mode:"reality", label:"REALITY", mult:null, bg:"rgba(60,160,100,0.2)"},
+      // existing speed
+      fast:    {mode:"fast",    label:"FAST",    mult:6,    bg:"rgba(231,74,60,0.2)"},
+      speed:   {mode:"fast",    label:"FAST",    mult:6,    bg:"rgba(231,74,60,0.2)"},
+      quick:   {mode:"fast",    label:"FAST",    mult:6,    bg:"rgba(231,74,60,0.2)"},
+      rush:    {mode:"fast",    label:"FAST",    mult:6,    bg:"rgba(231,74,60,0.2)"},
+      slow:    {mode:"slow",    label:"SLOW",    mult:0.25, bg:"rgba(60,160,100,0.18)"},
+      calm:    {mode:"slow",    label:"SLOW",    mult:0.25, bg:"rgba(60,160,100,0.18)"},
+      easy:    {mode:"slow",    label:"SLOW",    mult:0.25, bg:"rgba(60,160,100,0.18)"},
+      gentle:  {mode:"slow",    label:"SLOW",    mult:0.25, bg:"rgba(60,160,100,0.18)"},
+      // reset
+      reset:   {mode:"normal",  label:"NORMAL",  mult:1,    bg:"rgba(231,74,60,0.1)"},
+      normal:  {mode:"normal",  label:"NORMAL",  mult:1,    bg:"rgba(231,74,60,0.1)"},
+      now:     {mode:"normal",  label:"NORMAL",  mult:1,    bg:"rgba(231,74,60,0.1)"},
+    };
+
+    // These are visual layers: they toggle without changing currentMode
+    const VISUAL_ONLY = ["mono","neon","glass","shadow","dim","glow","light","shine","focus","silent","breath","echo"];
+
+    // ── Input listener ──
+    typingInput.addEventListener("input", function() {
+      const val = typingInput.value.toLowerCase().trim();
+      for (const word in TRIGGERS) {
+        if (val.includes(word)) {
+          activate(TRIGGERS[word], word);
+          typingInput.value = "";
+          return;
+        }
+      }
+    });
+
+    function activate(cfg, word) {
+      // ── VISUAL TOGGLES (layer, no mode change) ──
+      if (VISUAL_ONLY.includes(word) || VISUAL_ONLY.includes(cfg.mode)) {
+        const key = (cfg.mode==="glow") ? "glow" : cfg.mode;
+        if (key === "echo") {
+          vFlags.echo = !vFlags.echo;
+          if (vFlags.echo) echoInit(); else echoClear();
+          modeLabelEl.textContent = vFlags.echo ? "ECHO" : currentMode.toUpperCase();
+          modeLabelEl.style.background = vFlags.echo ? cfg.bg : "rgba(231,74,60,0.1)";
+          return;
+        }
+        toggleVisual(key);
+        modeLabelEl.textContent = vFlags[key] ? cfg.label : currentMode.toUpperCase();
+        modeLabelEl.style.background = vFlags[key] ? cfg.bg : "rgba(231,74,60,0.1)";
+        return;
       }
 
-      setTime();
-      setInterval(setTime, 1000);
+      // ── EXPLAIN (overlay only, no mode change) ──
+      if (cfg.mode === "explain") { explainShow(); return; }
+
+      // ── REALITY (start lerp, no hard mode switch) ──
+      if (cfg.mode === "reality") {
+        realStart = { h:hAngle, m:mAngle, s:sAngle };
+        realTgt   = realAngles();
+        realElapsed = 0;
+        modeLabelEl.textContent = "REALITY";
+        modeLabelEl.style.background = cfg.bg;
+        return;
+      }
+
+      // ── FULL MODE SWITCH ──
+      cleanupMode();
+      currentMode = cfg.mode;
+      if (cfg.mult !== null) targetMult = cfg.mult;
+      modeLabelEl.textContent    = cfg.label;
+      modeLabelEl.style.background = cfg.bg;
+
+      // Mode-specific init
+      switch (cfg.mode) {
+        case "normal":
+          clearAllVisuals();
+          targetMult = 1; speedMult = 1;
+          break;
+        case "pulse":
+          pulseAccum = 0;
+          break;
+        case "gravity":
+          grav = {
+            t0: performance.now(),
+            hTgt:hAngle, mTgt:mAngle, sTgt:sAngle,
+            hA: 30+Math.random()*40, mA: 20+Math.random()*30, sA: 50+Math.random()*60
+          };
+          break;
+        case "chaos":
+          chaosStart();
+          break;
+        case "mirror":
+          mirrorCreate();
+          break;
+        case "observe":
+          observeStart();
+          break;
+      }
+    }
+
+
+    // ============================================================
+    //  MAIN LOOP
+    // ============================================================
+    let lastT = performance.now();
+
+    function loop(now) {
+      const dt = Math.min((now - lastT)/1000, 0.1);
+      lastT = now;
+
+      calcTypingSpeed();
+
+      // Lerp speed
+      speedMult += (targetMult - speedMult) * Math.min(dt*4, 1);
+      speedMult = Math.max(-25, Math.min(25, speedMult));
+
+      // ─── REALITY LERP ─────────────────────────────────────
+      if (realTgt && realStart) {
+        realElapsed += dt * 1000;
+        const t = Math.min(realElapsed / REAL_DUR, 1);
+        const ease = 1 - Math.pow(1-t, 3); // ease-out cubic
+
+        function lerpAng(a, b, e) {
+          let d = b - a;
+          if (d > 180) d -= 360;
+          if (d < -180) d += 360;
+          return ((a + d*e) % 360 + 360) % 360;
+        }
+        hAngle = lerpAng(realStart.h, realTgt.h, ease);
+        mAngle = lerpAng(realStart.m, realTgt.m, ease);
+        sAngle = lerpAng(realStart.s, realTgt.s, ease);
+
+        if (t >= 1) {
+          realTgt=null; realStart=null; realElapsed=0;
+          currentMode="normal"; targetMult=1;
+          modeLabelEl.textContent="NORMAL";
+          modeLabelEl.style.background="rgba(231,74,60,0.1)";
+        }
+      } else {
+        // ─── ANGLE ACCUMULATION ──────────────────────────────
+
+        if (currentMode === "pulse") {
+          // Second ticks in 1-second snaps
+          pulseAccum += dt;
+          if (pulseAccum >= 1) { pulseAccum -= 1; sAngle += 6; }
+          mAngle += DEG_M * dt;
+          hAngle += DEG_H * dt;
+
+        } else if (currentMode === "gravity") {
+          // Damped pendulum
+          const elapsed = (now - grav.t0) / 1000;
+          const omega = 2.0, gamma = 0.38;
+          const decay = Math.exp(-gamma * elapsed);
+
+          sAngle = grav.sTgt + grav.sA * Math.sin(omega*2.6*elapsed)     * decay;
+          mAngle = grav.mTgt + grav.mA * Math.sin(omega*1.7*elapsed + 1) * decay;
+          hAngle = grav.hTgt + grav.hA * Math.sin(omega*1.2*elapsed + 2.5)* decay;
+
+          // Re-kick when decayed
+          if (decay < 0.015) {
+            grav.t0   = now;
+            grav.hTgt = hAngle; grav.mTgt = mAngle; grav.sTgt = sAngle;
+            grav.hA = 25+Math.random()*35; grav.mA = 15+Math.random()*25; grav.sA = 40+Math.random()*50;
+          }
+
+        } else {
+          // Standard accumulation
+          let wobble = 0;
+          if (currentMode === "drift") {
+            wobble   = (Math.random()-0.5) * 4;
+            mAngle  += (Math.random()-0.5) * 0.09;
+            hAngle  += (Math.random()-0.5) * 0.025;
+          }
+          sAngle += (DEG_S * speedMult + wobble) * dt;
+          mAngle += DEG_M * speedMult * dt;
+          hAngle += DEG_H * speedMult * dt;
+
+          // skip: random forward jumps
+          if (currentMode === "skip") {
+            skipTimer += dt;
+            if (skipTimer >= skipNext) {
+              skipTimer = 0;
+              skipNext  = 0.7 + Math.random()*1.5;
+              sAngle   += 6 + Math.random()*24;
+            }
+          }
+        }
+
+        // Normalize 0-360
+        sAngle = ((sAngle%360)+360)%360;
+        mAngle = ((mAngle%360)+360)%360;
+        hAngle = ((hAngle%360)+360)%360;
+      }
+
+      // ─── MAIN HAND TRANSFORMS ───────────────────────────────
+      hourEl.style.transform   = "translate(-50%,-100%) rotate("+hAngle+"deg)";
+      minuteEl.style.transform = "translate(-50%,-100%) rotate("+mAngle+"deg)";
+      secondEl.style.transform = "translate(-50%,-100%) rotate("+sAngle+"deg)";
+
+      // ─── ECHO TRAILS ────────────────────────────────────────
+if (vFlags.echo && echoEls.h && echoEls.h.length) {
+  echoBuffer.push({ h: hAngle, m: mAngle, s: sAngle });
+  if (echoBuffer.length > ECHO_LEN) echoBuffer.shift();
+
+  ["h", "m", "s"].forEach(k => {
+    const col = k === "s" ? "231,74,60" : "0,0,0";
+
+    for (let i = 0; i < ECHO_LEN; i++) {
+      const el = echoEls[k][i];
+      if (!el) continue;
+
+      if (i < echoBuffer.length) {
+        const age = i / ECHO_LEN;
+
+        el.style.transform = `rotate(${echoBuffer[i][k]}deg)`;
+        el.style.background = `rgba(${col}, ${(1 - age) * 0.35})`;
+        el.style.opacity = (1 - age) * 0.7;
+      } else {
+        el.style.opacity = 0;
+      }
+    }
+  });
+}
+
+
+      // ─── BREATH ─────────────────────────────────────────────
+if (vFlags.breath) {
+  const speed = 35;        // smaller = faster breathing
+  const intensity = 1.12; // scale strength
+  mainClock.style.transform =
+    `scale(${1 + Math.sin(now / speed) * intensity})`;
+} else {
+  mainClock.style.transform = "";
+}
+
+
+      // ─── MIRROR ─────────────────────────────────────────────
+      if (mirrorH) {
+        mS -= DEG_S * dt;
+        mM -= DEG_M * dt;
+        mH -= DEG_H * dt;
+        mS = ((mS%360)+360)%360;
+        mM = ((mM%360)+360)%360;
+        mH = ((mH%360)+360)%360;
+        mirrorH.style.transform = "translate(-50%,-100%) rotate("+mH+"deg)";
+        mirrorM.style.transform = "translate(-50%,-100%) rotate("+mM+"deg)";
+        mirrorS.style.transform = "translate(-50%,-100%) rotate("+mS+"deg)";
+      }
+
+      // ─── DIGITAL (always real) ──────────────────────────────
+      const real = new Date();
+      const rH = real.getHours()%12||12, rM = real.getMinutes();
+      timeEl.innerHTML  = rH+":"+(rM<10?"0"+rM:rM)+" "+(real.getHours()>=12?"PM":"AM");
+      dateEl.innerHTML  = days[real.getDay()]+", "+months[real.getMonth()]+' <span class="circle">'+real.getDate()+"</span>";
+
+      requestAnimationFrame(loop);
+    }
+
+    requestAnimationFrame(loop);
+
+    // ── Console ──
+    console.log(
+      "%c— THEME CLOCK —\n%cfreeze · pulse · drift · echo · skip · reverse · mono · neon · glass · shadow · dim · glow · focus · chaos · gravity · mirror · silent · breath · explain · observe · reality · reset",
+      "color:rgba(231,74,60,0.9);font-family:'Heebo',sans-serif;font-size:14px;letter-spacing:2px;padding:6px 0;border-bottom:1px solid rgba(231,74,60,0.25);",
+      "color:rgba(231,74,60,0.5);font-family:'Heebo',sans-serif;font-size:11px;letter-spacing:1.5px;"
+    );
     </script>
   </body>
 </html>
