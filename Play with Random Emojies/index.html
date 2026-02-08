@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Emoji Button</title>
+  <link rel="stylesheet" href="style.css">
+  <script async src="script.js" ></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Enhanced Emoji Button</h1>
+    
+    <button id="emoji">😀</button>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label>Animation:</label>
+        <select id="animation">
+          <option value="none">None</option>
+          <option value="shake">Shake</option>
+          <option value="spin">Spin</option>
+          <option value="bounce">Bounce</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label>Size:</label>
+        <input type="range" id="size" min="40" max="120" value="80">
+        <span id="sizeValue">80px</span>
+      </div>
+
+      <div class="control-group">
+        <label>Speed (ms):</label>
+        <input type="range" id="speed" min="100" max="1000" value="300" step="100">
+        <span id="speedValue">300ms</span>
+      </div>
+
+      <div class="control-group">
+        <label>Auto-change:</label>
+        <input type="checkbox" id="autoChange">
+      </div>
+
+      <div class="control-group">
+        <label>Emoji Trail:</label>
+        <input type="checkbox" id="emojiTrail">
+      </div>
+
+      <div class="control-group">
+        <label>Sound Effects:</label>
+        <input type="checkbox" id="soundToggle">
+      </div>
+
+      <div class="control-group">
+        <button id="randomColor">Random Background</button>
+        <button id="copyEmoji">Copy Emoji</button>
+      </div>
+
+      <div class="control-group">
+        <button id="clearHistory">Clear History</button>
+        <button id="downloadHistory">Download History</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div>Total Changes: <strong id="changeCount">0</strong></div>
+      <div>Favorite: <strong id="favorite">-</strong></div>
+    </div>
+
+    <div class="history">
+      <h3>Recent Emojis</h3>
+      <div class="history-items" id="historyItems"></div>
+    </div>
+  </div>
+
+  
+</body>
+</html>
