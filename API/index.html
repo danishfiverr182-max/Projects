@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cart-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: #667eea;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Loader */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Product Card */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+
+        .product-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-category {
+            color: #667eea;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .product-title {
+            font-size: 18px;
+            color: #2d3436;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 24px;
+            color: #00b894;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .add-to-cart-btn:active {
+            transform: scale(0.98);
+        }
+
+        .add-to-cart-btn.added {
+            background: #00b894;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #00b894;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .error-message {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            color: #d63031;
+            font-size: 18px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #d63031;
+            transform: scale(1.1);
+        }
+
+        .product-detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .detail-image-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detail-main-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-thumbnails {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .detail-thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .detail-thumbnail:hover,
+        .detail-thumbnail.active {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .detail-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detail-category {
+            display: inline-block;
+            background: #e8f4f8;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: fit-content;
+        }
+
+        .detail-title {
+            font-size: 28px;
+            color: #2d3436;
+            line-height: 1.3;
+        }
+
+        .detail-price {
+            font-size: 32px;
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .detail-description {
+            font-size: 16px;
+            color: #636e72;
+            line-height: 1.8;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-meta-label {
+            font-size: 12px;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-meta-value {
+            font-size: 16px;
+            color: #2d3436;
+            font-weight: 600;
+        }
+
+        .modal-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .product-detail-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .detail-main-image {
+                height: 300px;
+            }
+
+            .detail-title {
+                font-size: 22px;
+            }
+
+            .detail-price {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛍️ Product Store</h1>
+            <div class="cart-icon" onclick="viewCart()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </header>
+
+        <div id="productsContainer">
+            <div class="loader-container">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Product Details Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalProductContent">
+                <div class="modal-loader">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cart management using localStorage
+        class CartManager {
+            constructor() {
+                this.cart = this.getCart();
+                this.updateCartCount();
+            }
+
+            getCart() {
+                const cart = localStorage.getItem('cart');
+                return cart ? JSON.parse(cart) : [];
+            }
+
+            addToCart(product) {
+                const existingItem = this.cart.find(item => item.id === product.id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    this.cart.push({
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        image: product.images[0],
+                        quantity: 1
+                    });
+                }
+
+                localStorage.setItem('cart', JSON.stringify(this.cart));
+                this.updateCartCount();
+                this.showToast(`${product.title} added to cart!`);
+            }
+
+            updateCartCount() {
+                const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+                document.getElementById('cartCount').textContent = totalItems;
+            }
+
+            showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // API Service using Promises
+        class ProductService {
+            constructor() {
+                this.baseURL = 'https://api.escuelajs.co/api/v1';
+            }
+
+            fetchProducts() {
+                return new Promise((resolve, reject) => {
+                    fetch(`${this.baseURL}/products?offset=0&limit=12`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Simulate delay to show loader
+                            setTimeout(() => {
+                                resolve(data);
+                            }, 1000);
+                        })
+                        .catch(error => {
+                            reject(error);
+                        });
+                });
+            }
+        }
+
+        // Initialize
+        const cartManager = new CartManager();
+        const productService = new ProductService();
+
+        // Fetch and display products
+        function loadProducts() {
+            const container = document.getElementById('productsContainer');
+
+            productService.fetchProducts()
+                .then(products => {
+                    displayProducts(products);
+                })
+                .catch(error => {
+                    console.error('Error fetching products:', error);
+                    container.innerHTML = `
+                        <div class="error-message">
+                            ❌ Failed to load products. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('productsContainer');
+            
+            const productsHTML = products.map(product => `
+                <div class="product-card">
+                    <img 
+                        src="${product.images[0]}" 
+                        alt="${product.title}"
+                        class="product-image"
+                        onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'"
+                    >
+                    <div class="product-info">
+                        <div class="product-category">${product.category.name}</div>
+                        <h3 class="product-title">${product.title}</h3>
+                        <div class="product-price">$${product.price}</div>
+                        <button 
+                            class="add-to-cart-btn" 
+                            onclick="addToCart(${product.id}, '${product.title.replace(/'/g, "\\'")}', ${product.price}, '${product.images[0].replace(/'/g, "\\'")}', this)"
+                        >
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `<div class="products-grid">${productsHTML}</div>`;
+        }
+
+        function addToCart(id, title, price, image, button) {
+            const product = { id, title, price, images: [image] };
+            cartManager.addToCart(product);
+
+            // Visual feedback
+            button.textContent = '✓ Added';
+            button.classList.add('added');
+
+            setTimeout(() => {
+                button.textContent = 'Add to Cart';
+                button.classList.remove('added');
+            }, 1500);
+
+            // Open product details in modal
+            openProductDetails(id);
+        }
+
+        function openProductDetails(productId) {
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('modalProductContent');
+            
+            // Show modal with loader
+            modal.classList.add('show');
+            content.innerHTML = `
+                <div class="modal-loader">
+                    <div class="loader"></div>
+                </div>
+            `;
+
+            // Fetch product details
+            fetch(`https://api.escuelajs.co/api/v1/products/${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    displayProductInModal(product);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    content.innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: #d63031;">
+                            ❌ Failed to load product details
+                        </div>
+                    `;
+                });
+        }
+
+        function displayProductInModal(product) {
+            const content = document.getElementById('modalProductContent');
+            
+            const thumbnails = product.images.map((img, index) => `
+                <img 
+                    src="${img}" 
+                    alt="Thumbnail ${index + 1}"
+                    class="detail-thumbnail ${index === 0 ? 'active' : ''}"
+                    onclick="changeModalImage('${img}', this)"
+                    onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'"
+                >
+            `).join('');
+
+            content.innerHTML = `
+                <div class="product-detail-container">
+                    <div class="detail-image-section">
+                        <img 
+                            id="modalMainImage"
+                            src="${product.images[0]}" 
+                            alt="${product.title}"
+                            class="detail-main-image"
+                            onerror="this.src='https://via.placeholder.com/450x450?text=No+Image'"
+                        >
+                        <div class="detail-thumbnails">
+                            ${thumbnails}
+                        </div>
+                    </div>
+
+                    <div class="detail-info-section">
+                        <div class="detail-category">${product.category.name}</div>
+                        <h2 class="detail-title">${product.title}</h2>
+                        <div class="detail-price">$${product.price}</div>
+                        
+                        <div class="detail-description">
+                            <strong>Description:</strong><br>
+                            ${product.description || 'No description available for this product.'}
+                        </div>
+
+                        <div class="detail-meta">
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">Product ID</span>
+                                <span class="detail-meta-value">#${product.id}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">Category</span>
+                                <span class="detail-meta-value">${product.category.name}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">Created At</span>
+                                <span class="detail-meta-value">${new Date(product.creationAt).toLocaleDateString()}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">Last Updated</span>
+                                <span class="detail-meta-value">${new Date(product.updatedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+
+                        <button 
+                            class="add-to-cart-btn" 
+                            onclick="addAnotherToCart(${product.id}, '${product.title.replace(/'/g, "\\'")}', ${product.price}, '${product.images[0].replace(/'/g, "\\'")}')"
+                            style="width: 100%; margin-top: 10px;"
+                        >
+                            🛒 Add Another to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeModalImage(imageUrl, thumbnail) {
+            document.getElementById('modalMainImage').src = imageUrl;
+            
+            document.querySelectorAll('.detail-thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            thumbnail.classList.add('active');
+        }
+
+        function addAnotherToCart(id, title, price, image) {
+            const product = { id, title, price, images: [image] };
+            cartManager.addToCart(product);
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        function viewCart() {
+            const cart = cartManager.getCart();
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            let cartMessage = 'Your Cart:\n\n';
+            let total = 0;
+
+            cart.forEach(item => {
+                cartMessage += `${item.title} - $${item.price} x ${item.quantity}\n`;
+                total += item.price * item.quantity;
+            });
+
+            cartMessage += `\nTotal: $${total.toFixed(2)}`;
+            alert(cartMessage);
+        }
+
+        // Load products when page loads
+        loadProducts();
+    </script>
+</body>
+</html>     

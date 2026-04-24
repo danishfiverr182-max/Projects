@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ball Race: Size vs Speed</title>
+<link rel="stylesheet" href="style.css">
+<script async src="script.js" ></script>
+</head>
+<body>
+
+<div class="header">
+  <h1>Ball Race</h1>
+  <p>Size vs Speed: Which ball wins?</p>
+</div>
+
+<div class="arena">
+  <div class="lane-wrap">
+    <div class="label size-label"><span class="dot"></span>Grows in Size</div>
+    <canvas id="c1" width="230" height="280"></canvas>
+    <div class="stat-bar">
+      Radius: <b id="s1r">7px</b> &nbsp;|&nbsp; Blocks: <b id="s1b">4</b> &nbsp;|&nbsp; Speed: <b id="s1s">190</b>px/s
+    </div>
+  </div>
+  <div class="lane-wrap">
+    <div class="label speed-label"><span class="dot"></span>Grows in Speed</div>
+    <canvas id="c2" width="230" height="280"></canvas>
+    <div class="stat-bar">
+      Radius: <b id="s2r">7px</b> &nbsp;|&nbsp; Blocks: <b id="s2b">4</b> &nbsp;|&nbsp; Speed: <b id="s2s">190</b>px/s
+    </div>
+  </div>
+</div>
+
+<div id="winner-msg">Press Start to race!</div>
+<div class="controls">
+  <button id="btnStart">▶ Start</button>
+  <button id="btnReset">↺ Reset</button>
+</div>
+
+</body>
+</html>
